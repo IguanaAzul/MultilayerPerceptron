@@ -26,8 +26,7 @@ class Perceptron:
 
     def update(self, x, y):
         predicted, error = self.predict_and_evaluate(x, y)
-        x = np.array([x]*len(error))
-        self.weights += self.lr * (x.T * error)
+        self.weights += self.lr * (np.array([x]*len(error)).T * error)
         self.biases += self.lr * error
         return predicted, error
 
