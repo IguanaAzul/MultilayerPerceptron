@@ -26,12 +26,13 @@ class Perceptron:
 
     def update(self, x, y):
         predicted, error = self.predict_and_evaluate(x, y)
-        for idx, e in enumerate(error):
-            self.weights[:, idx] += self.lr * e * x
-            self.biases[idx] += self.lr * e * x[idx]
+        x = np.array([x]*len(error))
+        self.weights += self.lr * (x.T * error)
+        self.biases += self.lr * error
         return predicted, error
 
-    def train_and_evaluate(self, x_train, y_train, x_test, y_test, epochs):
+    def train_and_evaluate(self, x_train, y_train, x_test, y_test, epochs, verbose=True):
+        test_predictions = list()
         for epoch in range(epochs):
             train_predictions = list()
             test_predictions = list()
@@ -39,8 +40,10 @@ class Perceptron:
                 predicted, _ = self.update(x, y)
                 train_predictions.append(predicted)
             for x, y in zip(x_test, y_test):
-                predicted, _ = self.predict_and_evaluate(x, y)
+                predicted = self.predict(x)
                 test_predictions.append(predicted)
-            print("Epoch ", epoch)
-            print(" Train Acc: ", accuracy_score(y_train, train_predictions))
-            print(" Test Acc: ", accuracy_score(y_test, test_predictions))
+            if verbose:
+                print("Epoch ", epoch)
+                print(" Train Acc: ", accuracy_score(y_train, train_predictions))
+                print(" Test Acc: ", accuracy_score(y_test, test_predictions))
+        return accuracy_score(y_test, test_predictions)
